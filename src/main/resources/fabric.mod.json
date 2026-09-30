@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "smartharvest",
+  "version": "${version}",
+  "name": "Smart Harvest",
+  "description": "Right-click to harvest and replant crops instantly. Server-side friendly with zero bloat and fortune support.",
+  "authors": [
+    "Antarip"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/smart-harvest",
+    "sources": "https://github.com/antaripnandi/smart-harvest",
+    "issues": "https://github.com/antaripnandi/smart-harvest/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/smartharvest/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.antarip.smartharvest.SmartHarvestMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "${minecraft_version}",
+    "fabric-api": "*"
+  }
+}
