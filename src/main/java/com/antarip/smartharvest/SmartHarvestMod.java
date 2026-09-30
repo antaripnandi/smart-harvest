@@ -35,7 +35,7 @@ public class SmartHarvestMod implements ModInitializer {
             return InteractionResult.PASS;
         }
 
-        // Allow players sneaking with an item to perform block placement or alternate actions
+        // Allow players sneaking with an item to perform block placement or secondary actions
         if (player.isShiftKeyDown() && !player.getItemInHand(hand).isEmpty()) {
             return InteractionResult.PASS;
         }
@@ -77,15 +77,32 @@ public class SmartHarvestMod implements ModInitializer {
         List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, null, player, held);
 
         Item seedItem = block.asItem();
+        boolean seedAvailable = player.getAbilities().instabuild;
 
-        // Consume 1 seed from drops for replanting if not creative
-        if (!player.getAbilities().instabuild) {
+        // Try to consume 1 seed from harvested drops to replant
+        if (!seedAvailable) {
             for (ItemStack drop : drops) {
                 if (drop.is(seedItem)) {
                     drop.shrink(1);
+                    seedAvailable = true;
                     break;
                 }
             }
+        }
+
+        // If drops didn't provide a seed (e.g. Torchflower), check player inventory
+        if (!seedAvailable) {
+            int slot = player.getInventory().findSlotMatchingItem(new ItemStack(seedItem));
+            if (slot >= 0) {
+                player.getInventory().removeItem(slot, 1);
+                seedAvailable = true;
+            }
+        }
+
+        // If still no seed available to replant, break naturally without duplication
+        if (!seedAvailable) {
+            world.destroyBlock(pos, true, player);
+            return InteractionResult.SUCCESS;
         }
 
         // Spawn remaining harvested crops and bonus seeds

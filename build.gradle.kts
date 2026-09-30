@@ -7,7 +7,7 @@ val modId = "smartharvest"
 val mcVersion = sc.current.version
 
 group = "com.antarip.smartharvest"
-version = "1.0.0+mc$mcVersion"
+version = "1.0.1+mc$mcVersion"
 
 repositories {
     maven("https://maven.fabricmc.net/")
