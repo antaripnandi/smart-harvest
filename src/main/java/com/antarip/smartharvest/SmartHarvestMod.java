@@ -34,7 +34,8 @@ public class SmartHarvestMod implements ModInitializer {
     }
 
     private static InteractionResult onUseBlock(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
-        if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !player.mayBuild()) {
+        BlockPos pos = hitResult.getBlockPos();
+        if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !player.mayBuild() || !world.mayInteract(player, pos)) {
             return InteractionResult.PASS;
         }
 
@@ -43,7 +44,6 @@ public class SmartHarvestMod implements ModInitializer {
             return InteractionResult.PASS;
         }
 
-        BlockPos pos = hitResult.getBlockPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
@@ -71,6 +71,11 @@ public class SmartHarvestMod implements ModInitializer {
             return InteractionResult.PASS;
         }
 
+        Item seedItem = getSeedItem(block);
+        if (seedItem == null || seedItem == Items.AIR) {
+            return InteractionResult.PASS;
+        }
+
         if (world.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
@@ -79,7 +84,6 @@ public class SmartHarvestMod implements ModInitializer {
         ItemStack held = player.getItemInHand(hand);
         List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, null, player, held);
 
-        Item seedItem = getSeedItem(block);
         boolean seedAvailable = player.getAbilities().instabuild;
 
         // Try to consume 1 seed from harvested drops to replant
@@ -94,7 +98,7 @@ public class SmartHarvestMod implements ModInitializer {
         }
 
         // If drops didn't provide a seed (e.g. Torchflower), check player inventory
-        if (!seedAvailable) {
+        if (!seedAvailable && seedItem != Items.AIR) {
             int slot = player.getInventory().findSlotMatchingItem(new ItemStack(seedItem));
             if (slot >= 0) {
                 player.getInventory().removeItem(slot, 1);
