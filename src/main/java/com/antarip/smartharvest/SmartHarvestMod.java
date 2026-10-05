@@ -12,7 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.TorchflowerCropBlock;
 import net.minecraft.world.level.block.CocoaBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
@@ -76,7 +79,7 @@ public class SmartHarvestMod implements ModInitializer {
         ItemStack held = player.getItemInHand(hand);
         List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, null, player, held);
 
-        Item seedItem = block.asItem();
+        Item seedItem = getSeedItem(block);
         boolean seedAvailable = player.getAbilities().instabuild;
 
         // Try to consume 1 seed from harvested drops to replant
@@ -121,5 +124,24 @@ public class SmartHarvestMod implements ModInitializer {
         world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
         return InteractionResult.SUCCESS;
+    }
+
+    private static Item getSeedItem(Block block) {
+        if (block == Blocks.WHEAT) {
+            return Items.WHEAT_SEEDS;
+        } else if (block == Blocks.BEETROOTS) {
+            return Items.BEETROOT_SEEDS;
+        } else if (block == Blocks.CARROTS) {
+            return Items.CARROT;
+        } else if (block == Blocks.POTATOES) {
+            return Items.POTATO;
+        } else if (block == Blocks.NETHER_WART) {
+            return Items.NETHER_WART;
+        } else if (block == Blocks.COCOA) {
+            return Items.COCOA_BEANS;
+        } else if (block instanceof TorchflowerCropBlock) {
+            return Items.TORCHFLOWER_SEEDS;
+        }
+        return block.asItem();
     }
 }
